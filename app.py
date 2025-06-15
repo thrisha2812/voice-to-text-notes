@@ -1,9 +1,9 @@
 from flask import Flask, render_template
 
-app = Flask(__name__)#starts web app
+app = Flask(__name__)
 
-@app.route('/')#when someone visits your homepage this runs
-def home():
+@app.route('/')
+def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
