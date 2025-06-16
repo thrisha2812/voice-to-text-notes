@@ -1,36 +1,48 @@
-// Get references to HTML elements
-const startBtn = document.getElementById('startBtn');
-const textarea = document.getElementById('transcription');
+const startBtn = document.getElementById("startBtn");
+const transcription = document.getElementById("transcription");
+const themeToggle = document.getElementById("themeToggle");
 
-// Check if browser supports speech recognition
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+if ("webkitSpeechRecognition" in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
 
-if (!SpeechRecognition) {
-    alert("Sorry, your browser doesn't support speech recognition.");
+  let isRecording = false;
+
+  startBtn.addEventListener("click", () => {
+    if (isRecording) {
+      recognition.stop();
+      startBtn.classList.remove("recording");
+      startBtn.setAttribute("aria-pressed", "false");
+      isRecording = false;
+    } else {
+      recognition.start();
+      startBtn.classList.add("recording");
+      startBtn.setAttribute("aria-pressed", "true");
+      isRecording = true;
+    }
+  });
+
+  recognition.onresult = (event) => {
+    let interimTranscript = "";
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      const transcript = event.results[i][0].transcript;
+      interimTranscript += transcript;
+    }
+    transcription.value = interimTranscript;
+  };
 } else {
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    // Start speech recognition on button click
-    startBtn.addEventListener('click', () => {
-        recognition.start();
-        startBtn.disabled = true;
-        startBtn.textContent = "Listening...";
-    });
-
-    // When speech is detected
-    recognition.onresult = (event) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            transcript += event.results[i][0].transcript;
-        }
-        textarea.value = transcript;
-    };
-
-    // When recognition ends
-    recognition.onend = () => {
-        startBtn.disabled = false;
-        startBtn.textContent = "Start Recording";
-    };
+  alert("Your browser does not support speech recognition.");
 }
+
+themeToggle.addEventListener("click", () => {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute("data-theme");
+  html.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
+  themeToggle.innerHTML =
+    currentTheme === "light"
+      ? '<i class="bi bi-moon-stars-fill"></i>'
+      : '<i class="bi bi-sun-fill"></i>';
+});
