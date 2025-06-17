@@ -25,16 +25,18 @@
         <textarea id="transcription" placeholder="Your words will appear like magic..." rows="10" spellcheck="true"></textarea>
       </div>
 
-      <button id="saveBtn" class="save-btn">💾 Save Note</button>
+      <div class="text-center mt-3">
+        <button id="saveBtn" class="btn btn-success">💾 Save Note</button>
+      </div>
 
-      <section class="notes-list">
-        <h2>Saved Notes</h2>
+      <h3 class="mt-5">Saved Notes</h3>
+      <ul id="notesList" class="list-group">
         {% for note in notes %}
-          <div class="note-block">{{ note[0] }}</div>
+          <li class="list-group-item">{{ note }}</li>
         {% endfor %}
-      </section>
+      </ul>
 
-      <section class="palette-config">
+      <section class="palette-config mt-4">
         <label>🎨 Future Palette:</label>
         <select disabled>
           <option>Studio Ghibli Soft</option>
@@ -43,6 +45,7 @@
         </select>
       </section>
     </main>
+
   </div>
 </body>
 </html>

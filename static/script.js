@@ -1,48 +1,82 @@
 const startBtn = document.getElementById("startBtn");
 const transcription = document.getElementById("transcription");
 const themeToggle = document.getElementById("themeToggle");
+const saveBtn = document.getElementById("saveBtn");
+const notesList = document.getElementById("notesList");
 
 let recognition;
+let isRecording = false;
+
+// Web Speech API setup
 if ("webkitSpeechRecognition" in window) {
-  recognition = new webkitSpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = "en-US";
+    recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
 
-  let isRecording = false;
+    recognition.onresult = function (event) {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+        }
+        transcription.value = transcript;
+    };
 
-  startBtn.addEventListener("click", () => {
-    if (isRecording) {
-      recognition.stop();
-      startBtn.classList.remove("recording");
-      startBtn.setAttribute("aria-pressed", "false");
-      isRecording = false;
-    } else {
-      recognition.start();
-      startBtn.classList.add("recording");
-      startBtn.setAttribute("aria-pressed", "true");
-      isRecording = true;
-    }
-  });
-
-  recognition.onresult = (event) => {
-    let interimTranscript = "";
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      const transcript = event.results[i][0].transcript;
-      interimTranscript += transcript;
-    }
-    transcription.value = interimTranscript;
-  };
+    startBtn.addEventListener("click", () => {
+        if (isRecording) {
+            recognition.stop();
+            startBtn.classList.remove("recording");
+            startBtn.setAttribute("aria-pressed", "false");
+            startBtn.innerHTML = "🎤 Start Recording";
+            isRecording = false;
+        } else {
+            recognition.start();
+            startBtn.classList.add("recording");
+            startBtn.setAttribute("aria-pressed", "true");
+            startBtn.innerHTML = "⏹️ Stop Recording";
+            isRecording = true;
+        }
+    });
 } else {
-  alert("Your browser does not support speech recognition.");
+    alert("Your browser does not support speech recognition.");
 }
 
+// Save Note to backend
+saveBtn.addEventListener("click", () => {
+    const note = transcription.value.trim();
+
+    if (!note) {
+        alert("Note is empty!");
+        return;
+    }
+
+    fetch("/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note: note }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.textContent = data.note;
+            notesList.appendChild(li);
+            transcription.value = "";
+        } else {
+            alert("Failed to save note.");
+        }
+    });
+});
+
+// Theme toggle logic
 themeToggle.addEventListener("click", () => {
-  const html = document.documentElement;
-  const currentTheme = html.getAttribute("data-theme");
-  html.setAttribute("data-theme", currentTheme === "light" ? "dark" : "light");
-  themeToggle.innerHTML =
-    currentTheme === "light"
-      ? '<i class="bi bi-moon-stars-fill"></i>'
-      : '<i class="bi bi-sun-fill"></i>';
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute("data-theme") || "light";
+    const newTheme = currentTheme === "light" ? "dark" : "light";
+    html.setAttribute("data-theme", newTheme);
+
+    themeToggle.innerHTML = newTheme === "dark"
+        ? '<i class="bi bi-moon-stars-fill"></i>'
+        : '<i class="bi bi-sun-fill"></i>';
 });
