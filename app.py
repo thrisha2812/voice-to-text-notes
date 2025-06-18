@@ -1,21 +1,34 @@
 from flask import Flask, render_template, request, jsonify
+import sqlite3
 
 app = Flask(__name__)
 
-notes = []  # temporary in-memory list
+def get_notes():
+    conn = sqlite3.connect('notes.db')
+    c = conn.cursor()
+    c.execute("SELECT content, timestamp FROM notes ORDER BY id DESC")
+    notes = c.fetchall()
+    conn.close()
+    return notes
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html", notes=notes)
-
+    notes = get_notes()
+    return render_template('index.html', notes=notes)
 @app.route("/save", methods=["POST"])
-def save_note():
+def save():
     data = request.get_json()
-    note = data.get("note", "")
-    if note:
-        notes.append(note)
-        return jsonify({"success": True, "note": note}), 200
-    return jsonify({"success": False}), 400
+    note = data.get("note")
 
-if __name__ == "__main__":
+    conn = sqlite3.connect("notes.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO notes (content) VALUES (?)", (note,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True, "note": note})
+
+
+
+if __name__ == '__main__':
     app.run(debug=True)

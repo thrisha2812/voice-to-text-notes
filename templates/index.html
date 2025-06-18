@@ -28,13 +28,17 @@
       <div class="text-center mt-3">
         <button id="saveBtn" class="btn btn-success">💾 Save Note</button>
       </div>
+<h3 class="mt-5">Saved Notes</h3>
+<ul id="notesList" class="list-group">
+    {% for note in notes %}
+    <li class="list-group-item">
+        <strong>{{ note[1] }}</strong><br>
+        {{ note[0] }}
+    </li>
+    {% endfor %}
+</ul>
 
-      <h3 class="mt-5">Saved Notes</h3>
-      <ul id="notesList" class="list-group">
-        {% for note in notes %}
-          <li class="list-group-item">{{ note }}</li>
-        {% endfor %}
-      </ul>
+     
 
       <section class="palette-config mt-4">
         <label>🎨 Future Palette:</label>
