@@ -28,6 +28,10 @@
       <div class="text-center mt-3">
         <button id="saveBtn" class="btn btn-success">💾 Save Note</button>
       </div>
+      <div class="text-center mt-2">
+  <button id="clearBtn" class="btn btn-danger">🗑️ Clear All Notes</button>
+</div>
+
 <h3 class="mt-5">Saved Notes</h3>
 <ul id="notesList" class="list-group">
     {% for note in notes %}
@@ -51,5 +55,8 @@
     </main>
 
   </div>
+  <!-- Snackbar Notification -->
+<div id="snackbar"></div>
+
 </body>
 </html>

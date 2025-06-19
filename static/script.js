@@ -51,22 +51,30 @@ saveBtn.addEventListener("click", () => {
     }
 
     fetch("/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ note: note }),
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            const li = document.createElement("li");
-            li.className = "list-group-item";
-            li.textContent = data.note;
-            notesList.appendChild(li);
-            transcription.value = "";
-        } else {
-            alert("Failed to save note.");
-        }
-    });
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ note: note }),
+})
+.then(res => res.json())
+.then(data => {
+    if (data.success) {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+       li.innerHTML = `<strong>${data.note}</strong><br><small class="text-muted">${data.timestamp}</small>`;
+
+        notesList.appendChild(li);
+        transcription.value = "";
+
+        // ✅ Snackbar to show user feedback
+        showSnackbar("Note saved successfully!");
+
+        // ✅ Check if clear button should be enabled
+        updateClearButtonState();
+    } else {
+        showSnackbar("Failed to save note.");
+    }
+});
+
 });
 
 // Theme toggle logic
@@ -80,3 +88,38 @@ themeToggle.addEventListener("click", () => {
         ? '<i class="bi bi-moon-stars-fill"></i>'
         : '<i class="bi bi-sun-fill"></i>';
 });
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  if (!confirm("Are you sure you want to delete all notes?")) return;
+
+  fetch("/clear", {
+    method: "POST"
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById("notesList").innerHTML = "";
+      updateClearButtonState();
+      showSnackbar("All notes cleared.");
+
+    } else {
+      showSnackbar("Failed to clear notes.");
+    }
+  });
+});
+
+function showSnackbar(message) {
+  const snackbar = document.getElementById("snackbar");
+  snackbar.textContent = message;
+  snackbar.className = "show";
+  setTimeout(() => {
+    snackbar.className = snackbar.className.replace("show", "");
+  }, 3000);
+}
+function updateClearButtonState() {
+  const list = document.getElementById("notesList");
+  const clearBtn = document.getElementById("clearBtn");
+  clearBtn.disabled = list.children.length === 0;
+}
+window.addEventListener("DOMContentLoaded", updateClearButtonState);
+
