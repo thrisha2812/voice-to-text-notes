@@ -50,6 +50,35 @@ def clear_notes():
     except Exception as e:
         return jsonify(success=False, error=str(e))
 
+@app.route("/update", methods=["POST"])
+def update_note():
+    data = request.get_json()
+    note_id = data.get("id")
+    new_content = data.get("content")
+    if note_id is None or not new_content:
+        return jsonify(success=False)
+
+    conn = sqlite3.connect("notes.db")
+    c = conn.cursor()
+    c.execute("UPDATE notes SET content = ? WHERE id = ?", (new_content, note_id))
+    conn.commit()
+    conn.close()
+    return jsonify(success=True)
+
+@app.route('/edit', methods=['POST'])
+def edit_note():
+    data = request.get_json()
+    note_id = data['id']
+    content = data['content']
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    conn = sqlite3.connect('notes.db')
+    c = conn.cursor()
+    c.execute("UPDATE notes SET content = ?, timestamp = ? WHERE id = ?", (content, timestamp, note_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify(success=True, timestamp=timestamp)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -46,9 +46,12 @@
         <button class="note-btn">
           {{ note[1] or "View Note" }} <!-- Timestamp -->
         </button>
-        <div class="note-content">
-          {{ note[0] }} <!-- Note content -->
-        </div>
+       <div class="note-content" data-id="{{ note[2] }}">
+  <p class="note-text">{{ note[0] }}</p> <!-- Note content -->
+  <small class="timestamp">{{ note[1] }}</small><br />
+  <button class="btn btn-warning btn-sm edit-btn">✏️ Edit</button>
+</div>
+
       </div>
     {% endfor %}
   </div>

@@ -139,3 +139,109 @@ window.addEventListener("DOMContentLoaded", () => {
   const isDaytime = hour >= 6 && hour < 18;
   document.body.classList.add(isDaytime ? "daytime" : "nighttime");
 });
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("edit-btn")) {
+    const noteBlock = e.target.closest(".note-block");
+    const noteText = noteBlock.querySelector(".note-text");
+    const originalText = noteText.textContent;
+
+    // Replace note text with textarea
+    const textarea = document.createElement("textarea");
+    textarea.value = originalText;
+    textarea.className = "form-control my-2";
+
+    // Replace text node
+    noteBlock.replaceChild(textarea, noteText);
+
+    // Create Save button
+    const saveBtn = document.createElement("button");
+    saveBtn.textContent = "💾 Save";
+    saveBtn.className = "btn btn-success btn-sm";
+
+    e.target.replaceWith(saveBtn);
+
+    saveBtn.addEventListener("click", () => {
+      const updatedText = textarea.value.trim();
+      const noteId = noteBlock.dataset.id;
+
+      if (!updatedText) {
+        alert("Note cannot be empty!");
+        return;
+      }
+
+      fetch("/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: noteId, content: updatedText }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // Update UI
+            const newP = document.createElement("p");
+            newP.className = "note-text";
+            newP.textContent = updatedText;
+
+            noteBlock.replaceChild(newP, textarea);
+            saveBtn.replaceWith(e.target); // Re-add Edit button
+            e.target.textContent = "✏️ Edit";
+            e.target.classList.add("edit-btn");
+          } else {
+            alert("Failed to update note.");
+          }
+        });
+    });
+  }
+});
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("edit-btn")) {
+    const noteContent = e.target.closest(".note-content");
+    const noteText = noteContent.querySelector(".note-text");
+    const noteId = noteContent.dataset.id;
+
+    // Replace note text with a textarea
+    const currentText = noteText.textContent;
+    const textarea = document.createElement("textarea");
+    textarea.value = currentText;
+    textarea.className = "form-control mb-2";
+
+    // Create save button
+    const saveBtn = document.createElement("button");
+    saveBtn.textContent = "💾 Save Changes";
+    saveBtn.className = "btn btn-success btn-sm";
+
+    // Clear original content and add new form
+    noteContent.innerHTML = "";
+    noteContent.appendChild(textarea);
+    noteContent.appendChild(saveBtn);
+
+    saveBtn.addEventListener("click", function () {
+      const updatedNote = textarea.value.trim();
+      if (!updatedNote) {
+        alert("Note cannot be empty.");
+        return;
+      }
+
+      fetch("/edit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: noteId, content: updatedNote }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // Replace textarea with updated text
+            noteContent.innerHTML = `
+              <p class="note-text">${updatedNote}</p>
+              <small class="timestamp">${data.timestamp}</small><br />
+              <button class="btn btn-warning btn-sm edit-btn">✏️ Edit</button>
+            `;
+          } else {
+            alert("Failed to update note.");
+          }
+        });
+    });
+  }
+});
