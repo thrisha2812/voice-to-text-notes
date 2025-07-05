@@ -42,40 +42,30 @@ if ("webkitSpeechRecognition" in window) {
 }
 
 // Save Note to backend
-saveBtn.addEventListener("click", () => {
-    const note = transcription.value.trim();
+document.getElementById("saveBtn").addEventListener("click", () => {
+  const note = document.getElementById("transcription").value.trim();
+  const title = document.getElementById("noteTitle").value.trim();
 
-    if (!note) {
-        alert("Note is empty!");
-        return;
-    }
+  if (!note) {
+    alert("Note is empty!");
+    return;
+  }
 
-    fetch("/save", {
+  fetch("/save", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ note: note }),
-})
-.then(res => res.json())
-.then(data => {
+    body: JSON.stringify({ note: note, title: title }),
+  })
+  .then(res => res.json())
+  .then(data => {
     if (data.success) {
-        const li = document.createElement("li");
-        li.className = "list-group-item";
-       li.innerHTML = `<strong>${data.note}</strong><br><small class="text-muted">${data.timestamp}</small>`;
-
-        notesList.appendChild(li);
-        transcription.value = "";
-
-        // ✅ Snackbar to show user feedback
-        showSnackbar("Note saved successfully!");
-
-        // ✅ Check if clear button should be enabled
-        updateClearButtonState();
+      location.reload(); // Reload to show the new note
     } else {
-        showSnackbar("Failed to save note.");
+      alert("Failed to save note.");
     }
+  });
 });
 
-});
 
 // Theme toggle logic
 themeToggle.addEventListener("click", () => {
@@ -287,4 +277,19 @@ document.addEventListener("click", function (e) {
 
     URL.revokeObjectURL(url);
   }
+});
+document.getElementById("searchInput").addEventListener("input", function () {
+  const query = this.value.toLowerCase();
+  const notes = document.querySelectorAll(".note-toggle");
+
+  notes.forEach((note) => {
+    const content = note.querySelector(".note-text").innerText.toLowerCase();
+    const timestamp = note.querySelector(".timestamp")?.innerText.toLowerCase();
+
+    if (content.includes(query) || timestamp?.includes(query)) {
+      note.style.display = "";
+    } else {
+      note.style.display = "none";
+    }
+  });
 });

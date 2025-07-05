@@ -1,16 +1,24 @@
 from flask import Flask, render_template, request, jsonify
 from datetime import datetime
+# Only run this once to alter the table (or do it via DB browser)
 import sqlite3
+conn = sqlite3.connect("notes.db")
+c = conn.cursor()
+#c.execute("ALTER TABLE notes ADD COLUMN title TEXT")#
+conn.commit()
+conn.close()
+
 
 app = Flask(__name__)
 
 def get_notes():
-    conn = sqlite3.connect('notes.db')
+    conn = sqlite3.connect("notes.db")
     c = conn.cursor()
-    c.execute("SELECT content, timestamp FROM notes ORDER BY id DESC")
+    c.execute("SELECT content, timestamp, id, title FROM notes ORDER BY id DESC")
     notes = c.fetchall()
     conn.close()
     return notes
+
 
 @app.route('/')
 def index():
@@ -20,22 +28,20 @@ def index():
 from datetime import datetime
 
 @app.route("/save", methods=["POST"])
-def save():
+def save_note():
     data = request.get_json()
-    note = data.get("note", "").strip()
-
-    if not note:
-        return jsonify(success=False, error="Empty note")
-
+    note = data.get("note", "")
+    title = data.get("title", "")
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     conn = sqlite3.connect("notes.db")
     c = conn.cursor()
-    c.execute("INSERT INTO notes (content, timestamp) VALUES (?, ?)", (note, timestamp))
+    c.execute("INSERT INTO notes (content, timestamp, title) VALUES (?, ?, ?)", (note, timestamp, title))
     conn.commit()
     conn.close()
 
-    return jsonify(success=True, note=note, timestamp=timestamp)
+    return jsonify(success=True, note=note, timestamp=timestamp, title=title)
+
 
 
 @app.route('/clear', methods=['POST'])

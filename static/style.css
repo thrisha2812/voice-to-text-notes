@@ -2,6 +2,8 @@ body.daytime {
   background: url("/static/day.gif") no-repeat center center fixed;
   background-size: cover;
   transition: background 0.5s ease-in-out;
+    font-family: 'Lora', serif;
+
 }
 
 body.nighttime {
@@ -339,3 +341,40 @@ textarea {
 .delete-btn:hover {
   background: #d62828;
 }
+#searchInput {
+  border: 2px solid var(--accent); /* Use your theme color */
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  background-color: var(--note-bg);
+  color: var(--text);
+  box-shadow: 0 2px 5px var(--shadow);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: var(--btn-hover);
+  box-shadow: 0 0 8px rgba(112, 159, 176, 0.3);
+}
+.note-title-input {
+  width: 100%;
+  padding: 0.75rem 1.2rem;
+  font-size: 1.1rem;
+  font-family: 'Georgia', serif;
+  background-color: var(--note-bg);
+  color: var(--text);
+  border: 2px dashed #b6c9b3; /* Soft, sketchy border */
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 8px rgba(97, 114, 90, 0.1); /* Earthy soft shadow */
+  transition: all 0.3s ease;
+}
+
+.note-title-input:focus {
+  outline: none;
+  border-color: #88a7b0; /* A gentle forest teal */
+  background-color: #f4f8f6;
+  box-shadow: 0 0 10px rgba(112, 159, 176, 0.3); /* Magical glow */
+}
+
