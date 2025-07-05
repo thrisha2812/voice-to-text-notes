@@ -17,41 +17,47 @@
     </header>
 
     <main>
-      <button id="startBtn" class="record-btn" aria-pressed="false">
-        <i class="bi bi-mic-fill"></i> Start Recording
-      </button>
+     <button id="startBtn" class="ghibli-btn" aria-pressed="false">
+  <i class="bi bi-mic-fill"></i> Start Recording
+</button>
 
-      <div class="note-area">
-        <textarea id="transcription" placeholder="Your words will appear like magic..." rows="10" spellcheck="true"></textarea>
-      </div>
-
-      <div class="text-center mt-3">
-        <button id="saveBtn" class="btn btn-success">💾 Save Note</button>
-      </div>
-      <div class="text-center mt-2">
-  <button id="clearBtn" class="btn btn-danger">🗑️ Clear All Notes</button>
+<div class="note-area">
+  <textarea id="transcription" placeholder="Your words will appear like magic..." rows="10" spellcheck="true"></textarea>
 </div>
 
-<h3 class="mt-5">Saved Notes</h3>
-<ul id="notesList" class="list-group">
+<div class="text-center mt-3">
+  <button id="saveBtn" class="ghibli-btn">
+    <i class="bi bi-save2-fill"></i> Save Note
+  </button>
+</div>
+
+<div class="text-center mt-2">
+  <button id="clearBtn" class="ghibli-btn">
+    🗑️ Clear All Notes
+  </button>
+</div>
+
+</div>
+<section class="notes-list">
+  <h2>📝 Saved Notes</h2>
+  <div id="notesList">
     {% for note in notes %}
-    <li class="list-group-item">
-        <strong>{{ note[1] }}</strong><br>
-        {{ note[0] }}
-    </li>
+      <div class="note-toggle">
+        <button class="note-btn">
+          {{ note[1] or "View Note" }} <!-- Timestamp -->
+        </button>
+        <div class="note-content">
+          {{ note[0] }} <!-- Note content -->
+        </div>
+      </div>
     {% endfor %}
-</ul>
+  </div>
+</section>
+
 
      
 
-      <section class="palette-config mt-4">
-        <label>🎨 Future Palette:</label>
-        <select disabled>
-          <option>Studio Ghibli Soft</option>
-          <option>Ocean Breeze</option>
-          <option>Forest Dusk</option>
-        </select>
-      </section>
+     
     </main>
 
   </div>

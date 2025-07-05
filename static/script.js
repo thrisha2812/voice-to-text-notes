@@ -123,3 +123,19 @@ function updateClearButtonState() {
 }
 window.addEventListener("DOMContentLoaded", updateClearButtonState);
 
+// Toggle note content visibility
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".note-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const content = btn.nextElementSibling;
+      const isVisible = content.style.display === "block";
+      content.style.display = isVisible ? "none" : "block";
+    });
+  });
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  const hour = new Date().getHours();
+  const isDaytime = hour >= 6 && hour < 18;
+  document.body.classList.add(isDaytime ? "daytime" : "nighttime");
+});
