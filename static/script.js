@@ -245,3 +245,25 @@ document.addEventListener("click", function (e) {
     });
   }
 });
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("delete-btn")) {
+    const noteEl = e.target.closest(".note-toggle");
+    const noteText = e.target.dataset.note;
+
+    fetch("/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ note: noteText }),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        noteEl.remove();
+      } else {
+        alert("Failed to delete note.");
+      }
+    });
+  }
+});

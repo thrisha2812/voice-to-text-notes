@@ -324,3 +324,18 @@ textarea {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
 }
+.delete-btn {
+  margin-top: 0.5rem;
+  background: #e63946;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.delete-btn:hover {
+  background: #d62828;
+}

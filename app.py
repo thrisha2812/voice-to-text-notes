@@ -79,6 +79,18 @@ def edit_note():
     conn.close()
 
     return jsonify(success=True, timestamp=timestamp)
+@app.route('/delete', methods=['POST'])
+def delete_note():
+    data = request.get_json()
+    note_content = data.get("note")
+
+    conn = sqlite3.connect("notes.db")
+    c = conn.cursor()
+    c.execute("DELETE FROM notes WHERE content = ?", (note_content,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True})
 
 if __name__ == '__main__':
     app.run(debug=True)
