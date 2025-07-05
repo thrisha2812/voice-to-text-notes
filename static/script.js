@@ -267,3 +267,24 @@ document.addEventListener("click", function (e) {
     });
   }
 });
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("download-btn")) {
+    const noteContent = e.target
+      .closest(".note-content")
+      .querySelector(".note-text").innerText;
+    const timestamp = e.target
+      .closest(".note-content")
+      .querySelector(".timestamp").innerText
+      .replace(/[:\s]/g, "-"); // sanitize for filename
+
+    const blob = new Blob([noteContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Note-${timestamp}.txt`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+});
